@@ -1,0 +1,48 @@
+
+{% extends 'catalog/base.html' %}
+
+{% block title %}Courses | Course Portal{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h1>Available Courses</h1>
+    <p>Explore all courses available in our Course Portal.</p>
+
+    <!-- Search Form -->
+    <form method="GET" action="">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search courses by title or code..."
+            value="{{ search_query }}"
+        >
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+{% for course in courses %}
+<div class="card">
+    <h2>{{ course.code }}</h2>
+
+    <h3>{{ course.title }}</h3>
+
+    <p>{{ course.description }}</p>
+
+    <p><strong>Credits:</strong> {{ course.credits }}</p>
+
+    <p><strong>Instructor:</strong> {{ course.instructor }}</p>
+
+    <br>
+
+    <a href="{% url 'catalog:course_detail' course.id %}">
+        <button>View Details</button>
+    </a>
+</div>
+{% empty %}
+<div class="card">
+    <p>No courses available.</p>
+</div>
+{% endfor %}
+
+{% endblock %}
