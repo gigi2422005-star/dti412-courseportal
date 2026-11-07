@@ -1,3 +1,4 @@
+
 {% extends 'catalog/base.html' %}
 
 {% block title %}Courses | Course Portal{% endblock %}
@@ -7,6 +8,17 @@
 <div class="card">
     <h1>Available Courses</h1>
     <p>Explore all courses available in our Course Portal.</p>
+
+    <!-- Search Form -->
+    <form method="GET" action="">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search courses by title or code..."
+            value="{{ search_query }}"
+        >
+        <button type="submit">Search</button>
+    </form>
 </div>
 
 {% for course in courses %}

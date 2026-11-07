@@ -1,32 +1,32 @@
+
 from django.shortcuts import render
 from django.http import Http404
-
 
 COURSES_DATA = [
     {
         'id': 101,
         'code': 'DTI412',
         'title': 'Special Topic in Application Development',
+        'description': 'Learn application development using modern technologies.',
         'credits': 3,
-        'instructor': 'Dr. Sirisuda Buathongkeow',
-        'description': 'Comprehensive backend application engineering focusing on Django, DRF, RESTful APIs, JWT security, and cloud deployment.'
+        'instructor': 'Course Instructor',
     },
     {
         'id': 102,
         'code': 'DTI201',
         'title': 'Database Systems & Data Modeling',
+        'description': 'Learn database design and data modeling.',
         'credits': 3,
-        'instructor': 'Department Faculty',
-        'description': 'Relational database design, ER diagrams, SQL query optimization, normalization, and transaction management.'
+        'instructor': 'Course Instructor',
     },
     {
         'id': 103,
         'code': 'DTI305',
         'title': 'Frontend Web Technologies & React',
+        'description': 'Learn frontend web development and React.',
         'credits': 3,
-        'instructor': 'Department Faculty',
-        'description': 'Modern user interface development using JavaScript ES6+, React components, state management, and API integration.'
-    }
+        'instructor': 'Course Instructor',
+    },
 ]
 
 
@@ -39,58 +39,66 @@ def home_view(request):
 
 
 def course_list_view(request):
+    search_query = request.GET.get('q', '').strip()
+
+    filtered_courses = [
+        course for course in COURSES_DATA
+        if search_query.lower() in course['title'].lower()
+        or search_query.lower() in course['code'].lower()
+    ]
+
     context = {
-        'courses': COURSES_DATA,
+        'courses': filtered_courses,
+        'search_query': search_query,
     }
+
     return render(request, 'catalog/course_list.html', context)
 
 
 def course_detail_view(request, course_id):
     course = next(
-        (c for c in COURSES_DATA if c['id'] == course_id),
+        (course for course in COURSES_DATA if course['id'] == course_id),
         None
     )
 
-    if not course:
-        raise Http404("Course with specified ID was not found.")
+    if course is None:
+        raise Http404("Course not found")
 
-    context = {
-        'course': course,
-    }
-    return render(request, 'catalog/course_detail.html', context)
+    return render(request, 'catalog/course_detail.html', {'course': course})
 
 
 def inquiry_view(request):
-    submitted_data = None
-    errors = []
+    errors = {}
+    submitted_data = {}
 
     if request.method == 'POST':
         student_name = request.POST.get('student_name', '').strip()
         email = request.POST.get('email', '').strip()
-        course_code = request.POST.get('course_code', '').strip()
         message = request.POST.get('message', '').strip()
 
-        if not student_name:
-            errors.append("Student Name is required.")
+        submitted_data = {
+            'student_name': student_name,
+            'email': email,
+            'message': message,
+        }
 
-        if not email or '@' not in email:
-            errors.append("A valid Email address is required.")
+        if not student_name:
+            errors['student_name'] = 'Name is required.'
+
+        if not email:
+            errors['email'] = 'Email is required.'
 
         if not message:
-            errors.append("Inquiry message cannot be empty.")
+            errors['message'] = 'Message is required.'
 
         if not errors:
-            submitted_data = {
-                'student_name': student_name,
-                'email': email,
-                'course_code': course_code,
-                'message': message,
-            }
+            return render(request, 'catalog/inquiry.html', {
+                'submitted': True,
+                'courses': COURSES_DATA,
+            })
 
-    context = {
+    return render(request, 'catalog/inquiry.html', {
         'courses': COURSES_DATA,
-        'submitted_data': submitted_data,
         'errors': errors,
-    }
-
-    return render(request, 'catalog/inquiry.html', context)
+        'submitted_data': submitted_data,
+    })
