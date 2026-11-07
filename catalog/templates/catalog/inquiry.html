@@ -1,0 +1,71 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Inquiry | Course Portal{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h1>Course Inquiry Form</h1>
+    <p>Please fill in the form below to send your inquiry.</p>
+</div>
+
+{% if submitted_data %}
+<div class="card">
+    <h2>Inquiry Submitted Successfully!</h2>
+    <p>Thank you, {{ submitted_data.student_name }}.</p>
+    <p>We have received your inquiry.</p>
+</div>
+{% endif %}
+
+{% if errors %}
+<div class="card">
+    <h3>Please correct the following errors:</h3>
+    {% for error in errors %}
+        <p>{{ error }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+    <form method="POST">
+        {% csrf_token %}
+
+        <p>
+            <label>Student Name</label><br>
+            <input type="text" name="student_name" required>
+        </p>
+
+        <br>
+
+        <p>
+            <label>Email Address</label><br>
+            <input type="email" name="email" required>
+        </p>
+
+        <br>
+
+        <p>
+            <label>Select Course</label><br>
+            <select name="course_code">
+                {% for course in courses %}
+                    <option value="{{ course.code }}">
+                        {{ course.code }} - {{ course.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <br>
+
+        <p>
+            <label>Your Message</label><br>
+            <textarea name="message" rows="5" required></textarea>
+        </p>
+
+        <br>
+
+        <button type="submit">Submit Inquiry</button>
+    </form>
+</div>
+
+{% endblock %}

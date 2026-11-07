@@ -1,0 +1,33 @@
+```html
+{% extends 'catalog/base.html' %}
+
+{% block title %}Home | Course Portal{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h1>Welcome to Course Portal</h1>
+    <p>Explore our courses and find the right learning path for you.</p>
+</div>
+
+<div class="card">
+    <h2>Our Courses</h2>
+    <p>Total Available Courses: {{ total_courses }}</p>
+</div>
+
+<div class="card">
+    <h2>Featured Course</h2>
+    <h3>{{ featured_course.code }} - {{ featured_course.title }}</h3>
+    <p>{{ featured_course.description }}</p>
+    <p>Credits: {{ featured_course.credits }}</p>
+    <p>Instructor: {{ featured_course.instructor }}</p>
+
+    <br>
+
+    <a href="{% url 'catalog:course_list' %}">
+        <button>Explore Courses</button>
+    </a>
+</div>
+
+{% endblock %}
+```
